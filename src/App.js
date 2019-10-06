@@ -1,13 +1,16 @@
 import React from 'react';
-
+import Container from '@material-ui/core/Container';
 import Nav from './components/Nav';
+import Menu from './components/Menu';
 
 const App = () => {
-
   return (
-    <React.Fragment>
-      <Nav/>
-    </React.Fragment>
+    <>
+      <Nav />
+      <Container>
+        <Menu />
+      </Container>
+    </>
   );
 };
 
