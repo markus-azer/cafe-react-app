@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Item from '../Item';
-import AddItem from '../AddItem';
+
+const AddItem = React.lazy(() => import('../AddItem'));
 
 const useStyles = makeStyles(theme => ({
   header: {
@@ -37,42 +39,42 @@ const Nav = () => {
       id: 1,
       type: 'Main Course',
       name: 'Pizza Margherita',
-      price: '5',
+      price: 5,
       photo: 'https://source.unsplash.com/random',
     },
     {
       id: 2,
       type: 'Main Course',
       name: 'Pizza Margherita',
-      price: '5',
+      price: 5,
       photo: 'https://source.unsplash.com/random',
     },
     {
       id: 3,
       type: 'Main Course',
       name: 'Pizza Margherita',
-      price: '5',
+      price: 5,
       photo: 'https://source.unsplash.com/random',
     },
     {
       id: 4,
       type: 'Main Course',
       name: 'Pizza Margherita',
-      price: '5',
+      price: 5,
       photo: 'https://source.unsplash.com/random',
     },
     {
       id: 5,
       type: 'Main Course',
       name: 'Pizza Margherita',
-      price: '5',
+      price: 5,
       photo: 'https://source.unsplash.com/random',
     },
     {
       id: 6,
       type: 'Main Course',
       name: 'Pizza Margherita',
-      price: '5',
+      price: 5,
       photo: 'https://source.unsplash.com/random',
     },
   ]);
@@ -109,7 +111,9 @@ const Nav = () => {
           ))}
         </Grid>
       </Container>
-      <AddItem open={addItemModal} toggleModal={toggleAddItemModal} addItem={addItem} />
+      <Suspense fallback={<CircularProgress />}>
+        <AddItem open={addItemModal} toggleModal={toggleAddItemModal} addItem={addItem} />
+      </Suspense>
     </>
   );
 };

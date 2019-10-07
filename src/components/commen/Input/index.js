@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import FilledInput from '@material-ui/core/FilledInput';
 import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import styles from './style';
@@ -18,6 +19,7 @@ const InputComponent = ({
   fullWidth,
   maxInputWidth,
   buttonType,
+  options,
 }) => {
   const { values, handleChange, handleBlur, errors, touched, setFieldValue } = formikProps;
   const inputWidth = maxInputWidth ? 12 : fullWidth ? 9 : 5; // eslint-disable-line no-nested-ternary
@@ -26,8 +28,9 @@ const InputComponent = ({
     <Grid className={classes.root} container>
       <Grid justify="center" md={inputWidth} xs={12} item container>
         <FormControl variant="filled" fullWidth error={touched[name] && errors[name]}>
+          {/* eslint-disable-next-line no-nested-ternary */}
           {buttonType === 'file' ? (
-            // TODO: show thumb
+            // TODO: Show thumb
             <div>
               <input
                 id="contained-button-file"
@@ -57,10 +60,36 @@ const InputComponent = ({
                 </Button>
               </label>
             </div>
+          ) : buttonType === 'select' ? (
+            <TextField
+              id={`input-${name}`}
+              fullWidth
+              select
+              label={name}
+              className={classes.input}
+              value={values[name]}
+              onChange={handleChange(name)}
+              SelectProps={{
+                MenuProps: {
+                  className: classes.menu,
+                },
+              }}
+              onBlur={handleBlur}
+              helperText={`Please select ${name}`}
+              variant="outlined"
+              margin="normal"
+              required={required}
+            >
+              {options.map(option => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
           ) : (
             <>
               <InputLabel htmlFor={`input-${name}`}>{label}</InputLabel>
-              <FilledInput
+              <TextField
                 id={`input-${name}`}
                 name={name}
                 fullWidth
@@ -69,6 +98,8 @@ const InputComponent = ({
                 type={buttonType}
                 onBlur={handleBlur}
                 className={classes.input}
+                margin="normal"
+                variant="outlined"
                 aria-describedby="input-error-text"
                 required={required}
               />
@@ -93,6 +124,12 @@ InputComponent.propTypes = {
   fullWidth: PropTypes.bool,
   maxInputWidth: PropTypes.bool,
   buttonType: PropTypes.string,
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+    })
+  ),
 };
 
 InputComponent.defaultProps = {
@@ -100,6 +137,7 @@ InputComponent.defaultProps = {
   fullWidth: false,
   maxInputWidth: false,
   buttonType: 'input',
+  options: [],
 };
 
 export default withStyles(styles, { withTheme: true })(InputComponent);

@@ -3,7 +3,8 @@ export default theme => ({
     marginBottom: theme.spacing(2),
   },
   input: {
-    marginBottom: 0,
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
   },
   button: {
     margin: theme.spacing(1),

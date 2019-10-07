@@ -30,7 +30,18 @@ const AddItem = ({ addItem, open, toggleModal }) => {
         isValid={formikProps.isValid}
         submit
       >
-        <Input label="Type" fullWidth name="type" required formikProps={formikProps} />
+        <Input
+          label="Type"
+          fullWidth
+          buttonType="select"
+          name="type"
+          required
+          options={[
+            { label: 'Main Course', value: 'Main Course' },
+            { label: 'Side', value: 'Side' },
+          ]}
+          formikProps={formikProps}
+        />
         <Input label="Name" fullWidth name="name" required formikProps={formikProps} />
         <Input label="Price" fullWidth name="price" required formikProps={formikProps} />
         <Input
