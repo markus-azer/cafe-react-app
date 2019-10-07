@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Item from '../Item';
+import AddItem from '../AddItem';
 
 const useStyles = makeStyles(theme => ({
   header: {
@@ -30,7 +31,8 @@ const useStyles = makeStyles(theme => ({
 const Nav = () => {
   const classes = useStyles();
 
-  const [items] = useState([
+  const [addItemModal, setAddItemModal] = useState(false);
+  const [items, setItems] = useState([
     {
       id: 1,
       type: 'Main Course',
@@ -75,6 +77,14 @@ const Nav = () => {
     },
   ]);
 
+  const addItem = ({ type, name, price, photo }) => {
+    const newItems = [...items, { id: items.length + 1, type, name, price, photo }];
+    setItems(newItems);
+  };
+
+  const toggleAddItemModal = () => {
+    setAddItemModal(!addItemModal);
+  };
   return (
     <>
       <CssBaseline />
@@ -82,7 +92,13 @@ const Nav = () => {
         <Typography variant="h5" noWrap className={classes.title}>
           Menu
         </Typography>
-        <Button variant="contained" size="large" color="primary" className={classes.button}>
+        <Button
+          variant="contained"
+          size="large"
+          color="primary"
+          className={classes.button}
+          onClick={toggleAddItemModal}
+        >
           Add menu item
         </Button>
       </Toolbar>
@@ -93,6 +109,7 @@ const Nav = () => {
           ))}
         </Grid>
       </Container>
+      <AddItem open={addItemModal} toggleModal={toggleAddItemModal} addItem={addItem} />
     </>
   );
 };

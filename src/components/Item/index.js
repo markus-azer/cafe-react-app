@@ -46,7 +46,7 @@ const Item = ({ index, item }) => {
 };
 
 Item.propTypes = {
-  index: PropTypes.string.isRequired,
+  index: PropTypes.number.isRequired,
   item: PropTypes.shape({
     photo: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
