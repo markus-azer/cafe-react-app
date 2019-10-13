@@ -20,6 +20,7 @@ const InputComponent = ({
   maxInputWidth,
   buttonType,
   options,
+  uploadOnBackground,
 }) => {
   const { values, handleChange, handleBlur, errors, touched, setFieldValue } = formikProps;
   const inputWidth = maxInputWidth ? 12 : fullWidth ? 9 : 5; // eslint-disable-line no-nested-ternary
@@ -36,8 +37,11 @@ const InputComponent = ({
                 id="contained-button-file"
                 name={name}
                 onChange={event => {
-                  setFieldValue('photo', event.currentTarget.files[0]);
-                  handleChange();
+                  const file = event.currentTarget.files[0];
+                  uploadOnBackground(file).then(url => {
+                    setFieldValue('photo', url);
+                    handleChange();
+                  });
                 }}
                 accept="image/*"
                 className={classes.hiddenInput}
@@ -67,14 +71,13 @@ const InputComponent = ({
               select
               label={name}
               className={classes.input}
-              value={values[name]}
+              value={values[name] || ''}
               onChange={handleChange(name)}
               SelectProps={{
                 MenuProps: {
                   className: classes.menu,
                 },
               }}
-              onBlur={handleBlur}
               helperText={`Please select ${name}`}
               variant="outlined"
               margin="normal"
@@ -93,7 +96,7 @@ const InputComponent = ({
                 id={`input-${name}`}
                 name={name}
                 fullWidth
-                value={values[name]}
+                value={values[name] || ''}
                 onChange={handleChange}
                 type={buttonType}
                 onBlur={handleBlur}
@@ -130,6 +133,7 @@ InputComponent.propTypes = {
       label: PropTypes.string.isRequired,
     })
   ),
+  uploadOnBackground: PropTypes.func,
 };
 
 InputComponent.defaultProps = {
@@ -138,6 +142,7 @@ InputComponent.defaultProps = {
   maxInputWidth: false,
   buttonType: 'input',
   options: [],
+  uploadOnBackground: undefined,
 };
 
 export default withStyles(styles, { withTheme: true })(InputComponent);

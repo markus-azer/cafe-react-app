@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
 
+import firebase from '../../firebase';
 import Item from '../Item';
 
 const AddItem = React.lazy(() => import('../AddItem'));
@@ -34,59 +35,51 @@ const Nav = () => {
   const classes = useStyles();
 
   const [addItemModal, setAddItemModal] = useState(false);
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      type: 'Main Course',
-      name: 'Pizza Margherita',
-      price: 5,
-      photo: 'https://source.unsplash.com/random',
-    },
-    {
-      id: 2,
-      type: 'Main Course',
-      name: 'Pizza Margherita',
-      price: 5,
-      photo: 'https://source.unsplash.com/random',
-    },
-    {
-      id: 3,
-      type: 'Main Course',
-      name: 'Pizza Margherita',
-      price: 5,
-      photo: 'https://source.unsplash.com/random',
-    },
-    {
-      id: 4,
-      type: 'Main Course',
-      name: 'Pizza Margherita',
-      price: 5,
-      photo: 'https://source.unsplash.com/random',
-    },
-    {
-      id: 5,
-      type: 'Main Course',
-      name: 'Pizza Margherita',
-      price: 5,
-      photo: 'https://source.unsplash.com/random',
-    },
-    {
-      id: 6,
-      type: 'Main Course',
-      name: 'Pizza Margherita',
-      price: 5,
-      photo: 'https://source.unsplash.com/random',
-    },
-  ]);
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    const unsubscribe = firebase
+      .firestore()
+      .collection('items')
+      .onSnapshot(snapshot => {
+        const fetchedItems = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setItems(fetchedItems);
+      });
+
+    return () => unsubscribe();
+  }, []);
 
   const addItem = ({ type, name, price, photo }) => {
-    const newItems = [...items, { id: items.length + 1, type, name, price, photo }];
-    setItems(newItems);
+    firebase
+      .firestore()
+      .collection('items')
+      .add({ type, name, price, photo });
+  };
+
+  const deleteItem = id => {
+    firebase
+      .firestore()
+      .collection('items')
+      .doc(id)
+      .delete();
+  };
+
+  const editItem = (id, { type, name, price, photo }) => {
+    firebase
+      .firestore()
+      .collection('items')
+      .doc(id)
+      .update({ type, name, price, photo });
   };
 
   const toggleAddItemModal = () => {
     setAddItemModal(!addItemModal);
   };
+
   return (
     <>
       <CssBaseline />
@@ -107,7 +100,13 @@ const Nav = () => {
       <Container className={classes.cardGrid}>
         <Grid container spacing={4}>
           {items.map(item => (
-            <Item key={item.id} index={item.id} item={item} />
+            <Item
+              key={item.id}
+              index={item.id}
+              item={item}
+              deleteItem={deleteItem}
+              editItem={editItem}
+            />
           ))}
         </Grid>
       </Container>

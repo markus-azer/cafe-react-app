@@ -5,8 +5,9 @@ import * as Yup from 'yup';
 import Alert from '../commen/Alert';
 import Input from '../commen/Input';
 
-const AddItem = ({ addItem, open, toggleModal }) => {
-  const AddItemSchema = Yup.object().shape({
+const EditItem = ({ id, data, editItem, open, toggleModal }) => {
+  const { type, name, price, photo } = data;
+  const EditItemSchema = Yup.object().shape({
     type: Yup.string().required(),
     name: Yup.string().required(),
     price: Yup.number().required(),
@@ -14,10 +15,10 @@ const AddItem = ({ addItem, open, toggleModal }) => {
   });
 
   const initialValues = {
-    type: '',
-    name: '',
-    price: '',
-    photo: '',
+    type,
+    name,
+    price,
+    photo,
   };
 
   const uploadOnBackground = file => {
@@ -35,7 +36,7 @@ const AddItem = ({ addItem, open, toggleModal }) => {
       <Alert
         open={open}
         toggleAlert={toggleModal}
-        title="Add Menu Item"
+        title="Edit Menu Item"
         onSubmit={formikProps.handleSubmit}
         isValid={formikProps.isValid}
         submit
@@ -52,7 +53,7 @@ const AddItem = ({ addItem, open, toggleModal }) => {
           ]}
           formikProps={formikProps}
         />
-        <Input label="Name" fullWidth name="name" required formikProps={formikProps} />
+        <Input label="Name" fullWidth name="name" value={name} required formikProps={formikProps} />
         <Input
           label="Price"
           fullWidth
@@ -65,28 +66,37 @@ const AddItem = ({ addItem, open, toggleModal }) => {
           label="Choose photo"
           buttonType="file"
           name="photo"
-          required
           formikProps={formikProps}
           uploadOnBackground={uploadOnBackground}
         />
       </Alert>
     );
   };
+
   return (
     <Formik
+      enableReinitialize
       initialValues={initialValues}
-      validationSchema={AddItemSchema}
+      validationSchema={EditItemSchema}
       render={renderForm}
       onSubmit={(v, { resetForm }) => {
-        addItem({ ...v });
+        editItem(id, { ...v });
         resetForm({});
       }}
     />
   );
 };
-AddItem.propTypes = {
+EditItem.propTypes = {
+  id: PropTypes.string.isRequired,
+  data: PropTypes.shape({
+    photo: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired,
+  }).isRequired,
   open: PropTypes.bool.isRequired,
-  addItem: PropTypes.func.isRequired,
+  editItem: PropTypes.func.isRequired,
   toggleModal: PropTypes.func.isRequired,
 };
-export default AddItem;
+
+export default EditItem;
