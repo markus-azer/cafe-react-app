@@ -10,6 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import firebase from '../../firebase';
 import Item from '../Item';
+import config from '../../config';
 
 const AddItem = React.lazy(() => import('../AddItem'));
 
@@ -60,12 +61,16 @@ const Nav = () => {
       .add({ type, name, price, photo });
   };
 
-  const deleteItem = id => {
+  const deleteItem = (id, photo) => {
     firebase
       .firestore()
       .collection('items')
       .doc(id)
       .delete();
+
+    fetch(`${config.API}/file/${photo}`, {
+      method: 'DELETE',
+    }).then(response => response.json());
   };
 
   const editItem = (id, { type, name, price, photo }) => {

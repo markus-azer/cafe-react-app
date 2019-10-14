@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
+import config from '../../config';
 
 const EditItem = React.lazy(() => import('../EditItem'));
 
@@ -69,7 +70,11 @@ const Item = ({ index, item, editItem, deleteItem }) => {
       <Grid item key={index} xs={12} sm={6} md={4}>
         <Card className={classes.card}>
           {/* TODO: Use lazy loading */}
-          <CardMedia className={classes.cardMedia} image={photo} title="Image title" />
+          <CardMedia
+            className={classes.cardMedia}
+            image={`${config.IMAGEBASE}${photo}`}
+            title="Image title"
+          />
           <CardContent className={classes.cardContent}>
             <div className={classes.container}>
               <div style={{ gridColumnEnd: 'span 8' }}>
@@ -95,7 +100,7 @@ const Item = ({ index, item, editItem, deleteItem }) => {
             <Button
               color="primary"
               onClick={() => {
-                deleteItem(index);
+                deleteItem(index, photo);
               }}
             >
               Delete

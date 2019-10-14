@@ -5,6 +5,8 @@ import * as Yup from 'yup';
 import Alert from '../commen/Alert';
 import Input from '../commen/Input';
 
+import config from '../../config';
+
 const EditItem = ({ id, data, editItem, open, toggleModal }) => {
   const { type, name, price, photo } = data;
   const EditItemSchema = Yup.object().shape({
@@ -22,12 +24,23 @@ const EditItem = ({ id, data, editItem, open, toggleModal }) => {
   };
 
   const uploadOnBackground = file => {
-    // eslint-disable-next-line no-console
-    console.log(file);
-    // const formData = new FormData(file);
+    const formData = new FormData();
+    formData.append('file', file);
 
-    return new Promise(resolve => {
-      resolve('https://source.unsplash.com/random');
+    return new Promise((resolve, reject) => {
+      fetch(`${config.API}/file`, {
+        method: 'POST',
+        body: formData,
+      })
+        .then(response => response.json())
+        .then(res => {
+          if (res.successful) resolve(res.data.key);
+
+          reject(res.message);
+        })
+        .catch(err => {
+          reject(err.message);
+        });
     });
   };
 

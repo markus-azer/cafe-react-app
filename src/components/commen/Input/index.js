@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { withStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -22,8 +23,18 @@ const InputComponent = ({
   options,
   uploadOnBackground,
 }) => {
-  const { values, handleChange, handleBlur, errors, touched, setFieldValue } = formikProps;
+  const {
+    values,
+    handleChange,
+    handleBlur,
+    errors,
+    touched,
+    setFieldValue,
+    setFieldError,
+    setFieldTouched,
+  } = formikProps;
   const inputWidth = maxInputWidth ? 12 : fullWidth ? 9 : 5; // eslint-disable-line no-nested-ternary
+  const [loading, setLoading] = useState(false);
 
   return (
     <Grid className={classes.root} container>
@@ -38,18 +49,24 @@ const InputComponent = ({
                 name={name}
                 onChange={event => {
                   const file = event.currentTarget.files[0];
-                  uploadOnBackground(file).then(url => {
-                    setFieldValue('photo', url);
-                    handleChange();
-                  });
+                  setLoading(true);
+                  uploadOnBackground(file)
+                    .then(url => {
+                      setLoading(false);
+                      setFieldValue('photo', url);
+                      handleChange();
+                    })
+                    .catch(err => {
+                      setLoading(false);
+                      setFieldError(name, err);
+                      setFieldTouched(name, true);
+                    });
                 }}
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp,image/jpg"
                 className={classes.hiddenInput}
                 multiple
                 type="file"
-                onBlur={handleBlur}
                 aria-describedby="input-error-text"
-                required={required}
               />
               {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
               <label htmlFor="contained-button-file">
@@ -62,26 +79,30 @@ const InputComponent = ({
                 >
                   Choose Photo
                 </Button>
+                {loading ? <CircularProgress size={20} /> : ``}
               </label>
             </div>
           ) : buttonType === 'select' ? (
             <TextField
               id={`input-${name}`}
+              name={name}
               fullWidth
-              select
-              label={name}
-              className={classes.input}
               value={values[name] || ''}
               onChange={handleChange(name)}
+              type={buttonType}
+              onBlur={handleBlur}
+              className={classes.input}
+              margin="normal"
+              variant="outlined"
+              aria-describedby="input-error-text"
+              required={required}
+              select
+              label={name}
               SelectProps={{
                 MenuProps: {
                   className: classes.menu,
                 },
               }}
-              helperText={`Please select ${name}`}
-              variant="outlined"
-              margin="normal"
-              required={required}
             >
               {options.map(option => (
                 <MenuItem key={option.value} value={option.value}>

@@ -17,4 +17,7 @@ export default theme => ({
     marginLeft: 'auto',
     textTransform: 'none',
   },
+  progress: {
+    margin: theme.spacing(1),
+  },
 });
